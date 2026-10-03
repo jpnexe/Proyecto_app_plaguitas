@@ -2,6 +2,7 @@ package com.example.proyecto_plagas_android.ui.screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,16 +19,23 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Article
+import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.CameraAlt
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.CloudDone
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.filled.Newspaper
+import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Thermostat
+import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
@@ -46,14 +54,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.example.proyecto_plagas_android.R
+import com.example.proyecto_plagas_android.ui.state.AgriculturalNews
 import com.example.proyecto_plagas_android.ui.state.AlertType
 import com.example.proyecto_plagas_android.ui.state.DashboardUiState
 import com.example.proyecto_plagas_android.ui.state.PestAlert
@@ -70,7 +82,6 @@ private val BlueInfo = Color(0xFF42A5F5)
 private val GreenTip = Color(0xFF66BB6A)
 private val ChartLineGreen = Color(0xFF81C784)
 private val ChartFillGreen = Color(0xFFC8E6C9).copy(alpha = 0.4f)
-private val NavGray = Color(0xFF757575)
 private val NavBg = Color(0xFFF1F3E9)
 
 @Composable
@@ -78,7 +89,7 @@ fun HomeScreen(
     viewModel: AgroScanViewModel,
     onNavigateToCapture: () -> Unit,
     onNavigateToSettings: () -> Unit,
-    onNavigateToResult: (String) -> Unit, // Keeping it for compatibility if needed later
+    onNavigateToResult: (String) -> Unit,
 ) {
     val dashboardUiState by viewModel.dashboardUiState.collectAsState()
 
@@ -96,15 +107,15 @@ fun HomeScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
-            contentPadding = PaddingValues(horizontal = 18.dp, vertical = 24.dp),
+            contentPadding = PaddingValues(horizontal = 18.dp, vertical = 20.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            // Header: Hola Agricultor & Weather
+            // Header with Official Logo & Weather
             item {
                 HeaderCard()
             }
 
-            // Health Status
+            // Crop Health Overview
             item {
                 HealthStatusCard(dashboardUiState)
             }
@@ -114,19 +125,54 @@ fun HomeScreen(
                 ScanActionCard(onClick = onNavigateToCapture)
             }
 
-            // Alerts
+            // Field Weather & Crop Data Section
+            item {
+                CropFieldEnvironmentCard()
+            }
+
+            // Statistics Section
+            item {
+                Text(
+                    text = "Estadísticas del Campo",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = DarkGreenText,
+                    modifier = Modifier.padding(top = 4.dp),
+                )
+            }
+
+            item {
+                FieldStatisticsGrid(dashboardUiState)
+            }
+
+            // Regional Pest Alerts
             item {
                 Text(
                     text = "Avisos de la Zona",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.ExtraBold,
                     color = DarkGreenText,
-                    modifier = Modifier.padding(top = 8.dp, bottom = 4.dp),
+                    modifier = Modifier.padding(top = 4.dp),
                 )
             }
 
             item {
                 AlertsList(dashboardUiState.activePestAlerts)
+            }
+
+            // Regional News Section
+            item {
+                Text(
+                    text = "Noticias Agrícolas de la Zona",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = DarkGreenText,
+                    modifier = Modifier.padding(top = 4.dp),
+                )
+            }
+
+            item {
+                RegionalNewsSection(dashboardUiState.regionalNews)
             }
         }
     }
@@ -146,12 +192,31 @@ private fun HeaderCard() {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(
-                    text = "¡Hola, Agricultor!",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = DarkGreenText,
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    // Official App Logo Image
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_app_logo),
+                        contentDescription = "Logo AgroScan AI",
+                        modifier = Modifier
+                            .size(44.dp)
+                            .clip(CircleShape),
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Column {
+                        Text(
+                            text = "¡Hola, Agricultor!",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = DarkGreenText,
+                        )
+                        Text(
+                            text = "AgroScan AI • ONNX Mobile",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color.Gray,
+                        )
+                    }
+                }
+
                 Surface(
                     shape = RoundedCornerShape(16.dp),
                     color = BadgeBg,
@@ -199,7 +264,7 @@ private fun HeaderCard() {
                         color = Color.Black,
                     )
                     Text(
-                        text = "Ideal para riego",
+                        text = "Ideal para riego y pulverización",
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.DarkGray,
                     )
@@ -207,6 +272,220 @@ private fun HeaderCard() {
 
                 // Mini line chart
                 MiniWeatherChart(modifier = Modifier.width(70.dp).height(30.dp))
+            }
+        }
+    }
+}
+
+@Composable
+private fun CropFieldEnvironmentCard() {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = "Información del Suelo y Parcela",
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                color = DarkGreenText,
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                EnvironmentItem(
+                    icon = Icons.Default.WaterDrop,
+                    iconTint = BlueInfo,
+                    label = "Humedad Suelo",
+                    value = "64%",
+                )
+                EnvironmentItem(
+                    icon = Icons.Default.Thermostat,
+                    iconTint = OrangeWarning,
+                    label = "Temp. Suelo",
+                    value = "22°C",
+                )
+                EnvironmentItem(
+                    icon = Icons.Default.Psychology,
+                    iconTint = GreenBar,
+                    label = "Inferencia IA",
+                    value = "ONNX 377ms",
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun EnvironmentItem(
+    icon: ImageVector,
+    iconTint: Color,
+    label: String,
+    value: String,
+) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Surface(
+            shape = CircleShape,
+            color = iconTint.copy(alpha = 0.15f),
+            modifier = Modifier.size(32.dp),
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = iconTint,
+                    modifier = Modifier.size(18.dp),
+                )
+            }
+        }
+        Spacer(modifier = Modifier.width(8.dp))
+        Column {
+            Text(
+                text = value,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black,
+            )
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelSmall,
+                color = Color.Gray,
+            )
+        }
+    }
+}
+
+@Composable
+private fun FieldStatisticsGrid(uiState: DashboardUiState) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        Card(
+            modifier = Modifier.weight(1f),
+            shape = RoundedCornerShape(18.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+        ) {
+            Column(modifier = Modifier.padding(14.dp)) {
+                Icon(
+                    imageVector = Icons.Default.BarChart,
+                    contentDescription = null,
+                    tint = DarkGreenText,
+                    modifier = Modifier.size(24.dp),
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = "${uiState.totalScansCount} revisiones",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = DarkGreenText,
+                )
+                Text(
+                    text = "Totales este mes",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = Color.Gray,
+                )
+            }
+        }
+
+        Card(
+            modifier = Modifier.weight(1f),
+            shape = RoundedCornerShape(18.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+        ) {
+            Column(modifier = Modifier.padding(14.dp)) {
+                Text(
+                    text = "🌱 Cultivos",
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = DarkGreenText,
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = "Café & Maíz",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = Color.Black,
+                )
+                Text(
+                    text = "Principales revisados",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = Color.Gray,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun RegionalNewsSection(newsList: List<AgriculturalNews>) {
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        newsList.forEach { newsItem ->
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(18.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Surface(
+                            shape = RoundedCornerShape(8.dp),
+                            color = GreenBar.copy(alpha = 0.15f),
+                        ) {
+                            Text(
+                                text = newsItem.category,
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = DarkGreenText,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                            )
+                        }
+                        Text(
+                            text = newsItem.date,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color.Gray,
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Row(verticalAlignment = Alignment.Top) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.Article,
+                            contentDescription = null,
+                            tint = DarkGreenText,
+                            modifier = Modifier.size(22.dp).offset(y = 2.dp),
+                        )
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column {
+                            Text(
+                                text = newsItem.title,
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Black,
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = newsItem.summary,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color.DarkGray,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
+                    }
+                }
             }
         }
     }
@@ -329,7 +608,7 @@ private fun HealthStatusCard(uiState: DashboardUiState) {
                         .weight(sickRatio.toFloat().coerceAtLeast(1f))
                         .fillMaxSize()
                         .clip(RoundedCornerShape(topEnd = 8.dp, bottomEnd = 8.dp))
-                        .background(RedBar.copy(alpha = 0.8f)), // Slight gradient/alpha look
+                        .background(RedBar.copy(alpha = 0.8f)),
                 )
             }
 

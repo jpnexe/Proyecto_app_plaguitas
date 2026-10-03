@@ -16,6 +16,7 @@ import com.example.proyecto_plagas_android.data.model.TreatmentMeasures
 import com.example.proyecto_plagas_android.data.repository.GeminiRepositoryImpl
 import com.example.proyecto_plagas_android.data.repository.OfflineCropRepositoryImpl
 import com.example.proyecto_plagas_android.domain.usecase.AnalyzeCropUseCase
+import com.example.proyecto_plagas_android.ui.state.AgriculturalNews
 import com.example.proyecto_plagas_android.ui.state.AlertType
 import com.example.proyecto_plagas_android.ui.state.AnalysisUiState
 import com.example.proyecto_plagas_android.ui.state.DashboardUiState
@@ -306,6 +307,33 @@ class AgroScanViewModel(
             )
         )
 
+        val mockNews = listOf(
+            AgriculturalNews(
+                id = "news-1",
+                title = "Directivas fitosanitarias contra la Roya en zonas de alta humedad",
+                category = "Fitosanitario",
+                date = "Hoy, 08:30 AM",
+                summary = "Se aconseja regular la sombra del cafetal y aplicar bioinsumos de cobre tras las lluvias del fin de semana.",
+                source = "Ministerio de Agricultura",
+            ),
+            AgriculturalNews(
+                id = "news-2",
+                title = "Boletín de precios de mercado regional hoy",
+                category = "Mercado",
+                date = "Ayer",
+                summary = "El precio del quintal de café pergamino se mantiene estable con alta demanda de grano verde de calidad.",
+                source = "Bolsa Agrícola Regional",
+            ),
+            AgriculturalNews(
+                id = "news-3",
+                title = "Talleres de manejo integrado de plagas en maíz y hortalizas",
+                category = "Capacitación",
+                date = "29 Sep",
+                summary = "Capacitaciones gratuitas en campo sobre control biológico de gusano cogollero y polilla minadora.",
+                source = "Asociación de Agricultores",
+            ),
+        )
+
         val totalScans = mockList.size
         val healthyCount = mockList.count { it.diseaseDetail.severityLevel == SeverityLevel.HEALTHY }
         val diseasedCount = totalScans - healthyCount
@@ -318,6 +346,7 @@ class AgroScanViewModel(
             diseasedCropsCount = diseasedCount,
             overallHealthPercentage = healthPercentage,
             activePestAlerts = mockAlerts,
+            regionalNews = mockNews,
         )
     }
 }

@@ -1,0 +1,90 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="128dp"
+    android:height="128dp"
+    android:viewportWidth="128"
+    android:viewportHeight="128">
+
+    <!-- White Circular Background -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M64,64m-64,0a64,64 0,1 1,128 0a64,64 0,1 1,-128 0" />
+
+    <!-- Corner Frame Reticles -->
+    <!-- Top-Left Corner -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#1B4324"
+        android:strokeWidth="5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M 28,48 V 34 A 8,8 0 0,1 36,26 H 50" />
+
+    <!-- Top-Right Corner -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#81C784"
+        android:strokeWidth="5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M 78,26 H 92 A 8,8 0 0,1 100,34 V 48" />
+
+    <!-- Bottom-Left Corner -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#1B4324"
+        android:strokeWidth="5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M 28,80 V 94 A 8,8 0 0,0 36,102 H 50" />
+
+    <!-- Bottom-Right Corner -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#1B4324"
+        android:strokeWidth="5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M 78,102 H 92 A 8,8 0 0,0 100,94 V 80" />
+
+    <!-- Main Green Leaf Body -->
+    <path
+        android:fillColor="#2E7D32"
+        android:pathData="M 34,94 C 34,50 60,30 94,30 C 94,74 68,94 34,94 Z" />
+
+    <!-- Dark Green Leaf Shadow/Half -->
+    <path
+        android:fillColor="#1B4324"
+        android:pathData="M 34,94 C 44,70 60,46 94,30 C 72,60 52,86 34,94 Z" />
+
+    <!-- White Leaf Veins -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="3.5"
+        android:strokeLineCap="round"
+        android:pathData="M 34,94 C 54,74 72,52 94,30 M 52,76 C 58,68 64,68 64,68 M 66,60 C 74,50 82,50 82,50" />
+
+    <!-- Horizontal Target Line -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#81C784"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"
+        android:pathData="M 20,64 H 108" />
+
+    <!-- Vertical Target Line -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#81C784"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"
+        android:pathData="M 64,20 V 108" />
+
+    <!-- Center Reticle Circle -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#81C784"
+        android:strokeWidth="3"
+        android:pathData="M64,64m-6,0a6,6 0,1 1,12 0a6,6 0,1 1,-12 0" />
+
+</vector>

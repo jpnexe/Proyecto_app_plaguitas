@@ -18,6 +18,15 @@ data class PestAlert(
     val description: String,
 )
 
+data class AgriculturalNews(
+    val id: String,
+    val title: String,
+    val category: String,
+    val date: String,
+    val summary: String,
+    val source: String,
+)
+
 data class DashboardUiState(
     val recentAnalyses: List<CropAnalysisResult> = emptyList(),
     val totalScansCount: Int = 0,
@@ -25,5 +34,6 @@ data class DashboardUiState(
     val diseasedCropsCount: Int = 0,
     val overallHealthPercentage: Int = 100,
     val activePestAlerts: List<PestAlert> = emptyList(),
+    val regionalNews: List<AgriculturalNews> = emptyList(),
     val isLoading: Boolean = false,
 )
